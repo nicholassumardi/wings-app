@@ -32,6 +32,7 @@ Route::prefix('admin')->middleware('auth.login')->group(function () {
     Route::prefix('task_management')->group(function () {
         Route::get('/', [TaskManagementController::class, 'index']);
         Route::get('detail', [TaskManagementController::class, 'detail']);
+        Route::get('show_update/{id}', [TaskManagementController::class, 'detailShow']);
         Route::get('datatable', [TaskManagementController::class, 'datatable']);
         Route::match(['get', 'post'], 'create', [TaskManagementController::class, 'create']);
         Route::match(['get', 'post'],'update', [TaskManagementController::class, 'update']);

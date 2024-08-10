@@ -37,12 +37,12 @@
                     class="material-icons">face</i><span class="menu-title" data-i18n="User">User</span></a>
             <div class="collapsible-body">
                 <ul class="collapsible collapsible-sub" data-collapsible="accordion">
+                    <li><a href="{{url('admin/role_setting')}}"><i
+                        class="material-icons">radio_button_unchecked</i><span data-i18n="View">Role</span></a>
+                     </li>
                     <li><a href="{{url('admin/user_setting')}}"><i
                                 class="material-icons">radio_button_unchecked</i><span data-i18n="List">List
                                 User</span></a>
-                    </li>
-                    <li><a href="{{url('admin/role_setting')}}"><i
-                                class="material-icons">radio_button_unchecked</i><span data-i18n="View">Role</span></a>
                     </li>
                 </ul>
             </div>

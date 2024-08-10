@@ -19,7 +19,7 @@
                         </ol>
                     </div>
                     <div class="col s2 m2 l2">
-                        <a class="waves-effect waves-light btn modal-trigger" href="#modal_task">Add New task</a>
+                        <a class="waves-effect waves-light btn modal-trigger" href="#modal_task">Add New Role</a>
                     </div>
                 </div>
             </div>
@@ -38,11 +38,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
-                                                        <th>Title</th>
-                                                        <th>Description</th>
-                                                        <th>Due Date</th>
-                                                        <th>Status</th>
-                                                        <th>Assignee</th>
+                                                        <th>User Type</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -65,36 +61,15 @@
 <!-- Modal Structure -->
 <div id="modal_task" class="modal">
     <div class="modal-content">
-        <h4>Add New Task</h4>
+        <h4>Add New Role</h4>
         <div class="col s12 m6 l6">
             <div id="basic-form" class="card card card-default scrollspy">
                 <div class="card-content">
-                    <form id="form-data">
+                    <form id="form_data">
                         <div class="row">
                             <div class="input-field col s12">
-                                <input type="text" name="title" id="title">
-                                <label for="fn">Title</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <textarea id="description" class="materialize-textarea" name="description"></textarea>
-                                <label for="email">Description</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <label for="user_id">Assign To</label>
-                                <select class="select2 browser-default" id="user_id" name="user_id">
-
-                                </select>
-
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <input type="text" class="datepicker">
-                                <label for="message">Due Date</label>
+                                <input type="text" name="user_type" id="user_type">
+                                <label for="fn">User Type</label>
                             </div>
                         </div>
                     </form>
@@ -103,8 +78,8 @@
         </div>
 
     </div>
-    <div class="modal-footer">
-        <button class="btn cyan waves-effect waves-light right" id="save">Add
+    <div class="modal-footer" id="footerModal">
+        <button class="btn cyan waves-effect waves-light right" id="save" onclick="save()">Add
             <i class="material-icons right">send</i>
         </button>
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -125,7 +100,7 @@
          iDisplayInLength: 10,
          order: [[1, 'asc']],
          ajax: {
-            url: '{{ url("admin/task_management/datatable") }}',
+            url: '{{ url("admin/role_setting/datatable") }}',
             type: 'GET',
             beforeSend: function() {
         
@@ -138,15 +113,178 @@
          },
          columns: [
             { name: 'id', orderable: false, searchable: false, className: 'text-center align-middle details-control' },
-            { name: 'title', className: 'text-center align-middle' },
-            { name: 'description', className: 'text-center align-middle'},
-            { name: 'id', className: 'text-center align-middle' },
-            { name: 'id', searchable: false, className: 'text-center align-middle' },
-            { name: 'id', searchable: false, className: 'text-center align-middle' },
-            { name: 'id', searchable: false, className: 'text-center align-middle' },
+            { name: 'user_type', className: 'text-center align-middle' },
+            { name: 'action', orderable: false, searchable: false, className: 'text-center align-middle'},
          ]
       }); 
     }
+
+
+    function save() {
+        var formData = new FormData($('#form_data')[0]); // Corrected selector
+        $.ajax({
+            url: '{{ url("admin/role_setting/create") }}',
+            type: 'POST',
+            dataType: 'JSON',
+            data: formData,
+            processData: false, // Set processData to false when using FormData
+            contentType: false, // Set contentType to false when using FormData
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // You can add any actions you want to perform before sending the request here
+            },
+            success: function(response) {
+                loadDatatble()
+                if (response.status == 200) {
+                    var elems = document.querySelectorAll('.modal');
+                    var instance = M.Modal.getInstance(elems);
+                    instance.close();
+                } else if (response.status == 422) {
+                    $.each(response.error, function(i, val) {
+                        $.each(val, function(i, val) {
+                            $('#validation_content').append(`
+                                <li>` + val + `</li>
+                            `);
+                        });
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText); // Log the detailed error message
+            }
+        });
+    }
+
+    function show(id) {
+        $.ajax({
+            url: '{{ url("admin/role_setting/show") }}',
+            type: 'GET',
+            dataType: 'JSON',
+            data: {
+                id: id
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // You can add any actions you want to perform before sending the request here
+            },
+            success: function(response) {
+                loadDatatble()
+                if (response.status == 200) {
+                    $('.modal').modal();
+                    $('.modal').modal('open'); 
+                    $('#user_type').val(response.data.user_type);
+                    $('#footerModal').html('');
+                    $('#footerModal').append(`
+                     <button class="btn cyan waves-effect waves-light right" id="save" onclick="update(`+response.data.id+`)">Update
+                         <i class="material-icons right">send</i>
+                        </button>
+                     <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>`);
+                } else if (response.status == 422) {
+                    $.each(response.error, function(i, val) {
+                        $.each(val, function(i, val) {
+                            $('#validation_content').append(`
+                                <li>` + val + `</li>
+                            `);
+                        });
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText); // Log the detailed error message
+            }
+        });
+    }
+
+    function update(id){
+        var formData = new FormData($('#form_data')[0]); // Corrected selector
+        formData.append("id", id);
+        $.ajax({
+            url: '{{ url("admin/role_setting/update") }}',
+            type: 'POST',
+            dataType: 'JSON',
+            data: formData,
+            processData: false, // Set processData to false when using FormData
+            contentType: false, // Set contentType to false when using FormData
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // You can add any actions you want to perform before sending the request here
+            },
+            success: function(response) {
+                loadDatatble()
+                if (response.status == 200) {
+                    var elems = document.querySelectorAll('.modal');
+                    var instance = M.Modal.getInstance(elems);
+                    instance.close();
+                } else if (response.status == 422) {
+                    $.each(response.error, function(i, val) {
+                        $.each(val, function(i, val) {
+                            $('#validation_content').append(`
+                                <li>` + val + `</li>
+                            `);
+                        });
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText); // Log the detailed error message
+            }
+        });
+    }
+
+    function destroy(id) {
+        $.ajax({
+        url: '{{ url("admin/role_setting/delete") }}',
+        type: 'delete',
+        dataType: 'JSON',
+        data: {
+            id: id
+        },
+         headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+         beforeSend: function() {
+            $('#validation_alert').hide();
+            $('#validation_content').html('');
+         },
+         success: function(response) {
+            if(response.status == 200) {
+               loadDatatble()
+               notif('success', 'bg-success', response.message);
+            } else if(response.status == 422) {
+               notif('warning', 'bg-warning', 'Validation');
+               
+               $.each(response.error, function(i, val) {
+                  $.each(val, function(i, val) {
+                     $('#validation_content').append(`
+                        <li>` + val + `</li>
+                     `);
+                  });
+               });
+            } else {
+               notif('error', 'bg-danger', response.message);
+            }
+         },
+         error: function() {
+            swalInit.fire({
+               title: 'Server Error',
+               text: 'Please contact developer',
+               type: 'error'
+            });
+         }
+      });
+   }
+
+
+
 
 </script>
 @endpush

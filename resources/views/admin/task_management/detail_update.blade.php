@@ -30,6 +30,7 @@
                                 <div class="row">
                                     <div class="col s10 offset-s1">
 
+
                                     </div>
                                 </div>
                             </div>
@@ -37,23 +38,23 @@
                                 @csrf
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input type="text" name="title" id="title">
+                                        <input type="text" name="title" id="title" value="{{$data_task->title}}">
                                         <label for="fn">Title</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <textarea id="description" class="materialize-textarea"
-                                            name="description"></textarea>
+                                            name="description">{{$data_task->description}}</textarea>
                                         <label for="email">Description</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <select name="user_id" id="user_id" class="select2 browser-default">
-                                            @foreach ($data_user as $user)
-                                            <option value="{{$user->id}}">{{$user->name}}</option>
-                                            @endforeach
+                                            @if ($data_task->user_id != null)
+                                            <option value="{{$data_task->user_id}}">{{$data_task->user->name}}</option>
+                                            @endif
                                         </select>
                                         <label for="user_id">Assign To</label>
                                     </div>
@@ -61,22 +62,25 @@
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <select name="status" id="status">
-                                            <option value="0">Incomplete</option>
-                                            <option value="1">Complete</option>
+                                            <option {{$data_task->status == 0 ? 'selected' : ''}} value="0">
+                                                Incomplete</option>
+                                            <option {{$data_task->status == 1 ? 'selected' : ''}} value="1">
+                                                Complete</option>
                                         </select>
                                         <label for="status">Status</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input type="text" class="datepicker" name="due_date">
+                                        <input type="text" class="datepicker" name="due_date"
+                                            value="{{$data_task->due_date}}">
                                         <label for="message">Due Date</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <button class="btn cyan waves-effect waves-light right" type="button"
-                                            id="btn-save" onclick="save()">Add
+                                            id="btn-save" onclick="save({{$data_task->id}})">Update
                                             <i class="material-icons right">send</i>
                                         </button>
                                     </div>
@@ -95,11 +99,12 @@
     $(function() {
         select2ServerSide('#user_id', '{{ url("admin/select2/user") }}');
     });
-
-    function save() {
+    
+    function save(id) {
         var formData = new FormData($('#form_data')[0]); // Corrected selector
+        formData.append("id", id);
         $.ajax({
-            url: '{{ url("admin/task_management/create") }}',
+            url: '{{ url("admin/task_management/update") }}',
             type: 'POST',
             dataType: 'JSON',
             data: formData,
@@ -130,49 +135,6 @@
             }
         });
     }
-
-    function destroy(id) {
-        $.ajax({
-        url: '{{ url("admin/task_management/delete") }}',
-        type: 'delete',
-        dataType: 'JSON',
-        data: {
-            id: id
-        },
-         headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-         beforeSend: function() {
-            $('#validation_alert').hide();
-            $('#validation_content').html('');
-         },
-         success: function(response) {
-            if(response.status == 200) {
-               loadDatatble()
-               notif('success', 'bg-success', response.message);
-            } else if(response.status == 422) {
-               notif('warning', 'bg-warning', 'Validation');
-               
-               $.each(response.error, function(i, val) {
-                  $.each(val, function(i, val) {
-                     $('#validation_content').append(`
-                        <li>` + val + `</li>
-                     `);
-                  });
-               });
-            } else {
-               notif('error', 'bg-danger', response.message);
-            }
-         },
-         error: function() {
-            swalInit.fire({
-               title: 'Server Error',
-               text: 'Please contact developer',
-               type: 'error'
-            });
-         }
-      });
-   }
 
    
 </script>

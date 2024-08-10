@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TaskManagement;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,7 +28,15 @@ class TaskManagementController extends Controller
     public function detail()
     {
         $this->dataView['content'] = 'admin.task_management.detail';
+        $this->dataView['data_user'] = User::all();
+        return view('admin.layouts.index', ['data' => $this->dataView]);
+    }
 
+    public function detailShow($id)
+    {
+        $this->dataView['content'] = 'admin.task_management.detail_update';
+        $this->dataView['data_task'] = TaskManagement::where('id', $id)->first();
+        
         return view('admin.layouts.index', ['data' => $this->dataView]);
     }
 
@@ -76,6 +85,8 @@ class TaskManagementController extends Controller
 
         return response()->json($response);
     }
+
+
 
     public function update(Request $request)
     {
@@ -206,7 +217,7 @@ class TaskManagementController extends Controller
                     $query->where('description', 'like', "%$search%");
                 })->orWhereHas('user', function ($query) use ($search, $request) {
                     $query->where('name', 'like', "%$search%");
-                });;
+                });
             }
         })
             ->offset($start)
@@ -234,7 +245,7 @@ class TaskManagementController extends Controller
             foreach ($query_data as $val) {
                 $button = '<div class="row">
                             <div class="col s6">
-                                <p><a class="mb-6 btn btn-medium waves-effect waves-light green darken-1"> <i
+                                <p><a class="mb-6 btn btn-medium waves-effect waves-light green darken-1"  href="' . url('admin/task_management/show_update/' . $val->id . '') . '"> <i
                                             class="material-icons edit">edit</i></a>
                             </div>
                             <div class="col s6">

@@ -197,7 +197,84 @@ class UserController extends Controller
         return response()->json($response);
     }
 
-    public function datatableUser(Request $request) {}
+    public function datatableUser(Request $request)
+    {
+        $column = [
+            'id',
+            'name',
+            'email',
+        ];
+
+        $start  = $request->start;
+        $length = $request->length;
+        $order  = $column[$request->input('order.0.column')];
+        $dir    = $request->input('order.0.dir');
+        $search = $request->input('search.value');
+
+        $total_data = User::count();
+
+        $query_data = User::where(function ($query) use ($search, $request) {
+            if ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%search%");
+                });
+            }
+        })
+            ->offset($start)
+            ->limit($length)
+            ->orderBy($order, $dir)
+            ->get();
+
+        $total_filtered = User::where(function ($query) use ($search, $request) {
+            if ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%search%");
+                });
+            }
+        })
+            ->count();
+
+        $response['data'] = [];
+        if ($query_data <> FALSE) {
+            $nomor = $start + 1;
+            foreach ($query_data as $val) {
+                $button = '<div class="row">
+                            <div class="col s6">
+                                <p><a class="mb-6 btn btn-large waves-effect waves-light green darken-1" onclick="show(' . $val->id . ')"> <i
+                                            class="material-icons edit">edit</i></a>
+                            </div>
+                            <div class="col s6">
+                                </p>
+                                <p><a class="mb-6 btn btn-large waves-effect waves-light red darken-1" onclick="destroy(' . $val->id . ')"> <i
+                                            class="material-icons edit">cancel</i></a></p>
+                            </div>
+                        </div>';
+                $response['data'][] = [
+                    $nomor,
+                    $val->name,
+                    $val->email,
+                    $button,
+
+                ];
+
+                $nomor++;
+            }
+        }
+
+        $response['recordsTotal'] = 0;
+        if ($total_data <> FALSE) {
+            $response['recordsTotal'] = $total_data;
+        }
+
+        $response['recordsFiltered'] = 0;
+        if ($total_filtered <> FALSE) {
+            $response['recordsFiltered'] = $total_filtered;
+        }
+
+        return response()->json($response);
+    }
 
     public function createRole(Request $request)
     {
@@ -248,7 +325,7 @@ class UserController extends Controller
                     'user_type'      => 'required',
                 ],
                 [
-                    'role_id.required'  => 'user type cannot empty.',
+                    'user_type.required'  => 'user type cannot empty.',
                 ]
             );
 
@@ -325,5 +402,78 @@ class UserController extends Controller
         return response()->json($response);
     }
 
-    public function datatableRole(Request $request) {}
+    public function datatableRole(Request $request)
+    {
+        $column = [
+            'id',
+            'user_type',
+        ];
+
+        $start  = $request->start;
+        $length = $request->length;
+        $order  = $column[$request->input('order.0.column')];
+        $dir    = $request->input('order.0.dir');
+        $search = $request->input('search.value');
+
+        $total_data = Role::count();
+
+        $query_data = Role::where(function ($query) use ($search, $request) {
+            if ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('user_type', 'like', "%$search%");
+                });
+            }
+        })
+            ->offset($start)
+            ->limit($length)
+            ->orderBy($order, $dir)
+            ->get();
+
+        $total_filtered = Role::where(function ($query) use ($search, $request) {
+            if ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('user_type', 'like', "%$search%");
+                });
+            }
+        })
+            ->count();
+
+        $response['data'] = [];
+        if ($query_data <> FALSE) {
+            $nomor = $start + 1;
+            foreach ($query_data as $val) {
+                $button = '<div class="row">
+                            <div class="col s6">
+                                <p><a class="mb-6 btn btn-large waves-effect waves-light green darken-1" onclick="show(' . $val->id . ')"> <i
+                                            class="material-icons edit">edit</i></a>
+                            </div>
+                            <div class="col s6">
+                                </p>
+                                <p><a class="mb-6 btn btn-large waves-effect waves-light red darken-1" onclick="destroy(' . $val->id . ')"> <i
+                                            class="material-icons edit">cancel</i></a></p>
+                            </div>
+                        </div>';
+                $response['data'][] = [
+                    $nomor,
+                    $val->user_type,
+                    $button,
+
+                ];
+
+                $nomor++;
+            }
+        }
+
+        $response['recordsTotal'] = 0;
+        if ($total_data <> FALSE) {
+            $response['recordsTotal'] = $total_data;
+        }
+
+        $response['recordsFiltered'] = 0;
+        if ($total_filtered <> FALSE) {
+            $response['recordsFiltered'] = $total_filtered;
+        }
+
+        return response()->json($response);
+    }
 }
