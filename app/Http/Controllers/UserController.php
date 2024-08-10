@@ -117,26 +117,43 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if ($user) {
+            $validation = Validator::make(
+                $request->all(),
+                [
+                    'role_id'      => 'required|array',
+                ],
+                [
+                    'role_id.required'  => 'role cannot empty.',
+                    'role_id.array'     => 'role must be array.',
+                ]
+            );
 
-            $user->userRole()->delete();
+            if ($validation->fails()) {
+                $response = [
+                    'status'   => 422,
+                    'message'  => $validation->errors(),
+                ];
+            } else {
+                $user->userRole()->delete();
 
-            $user->update([
-                'email'    => $request->email,
-                'name'     => $request->name,
-                'password' => Hash::make($request->password),
-            ]);
-
-            foreach ($request->role_id as $role) {
-                UserRole::create([
-                    'user_id' => $user->id,
-                    'role_id' => $role,
+                $user->update([
+                    'email'    => $request->email,
+                    'name'     => $request->name,
+                    'password' => Hash::make($request->password),
                 ]);
-            }
 
-            $response = [
-                'status'  => 200,
-                'message' => 'Data created successfuly',
-            ];
+                foreach ($request->role_id as $role) {
+                    UserRole::create([
+                        'user_id' => $user->id,
+                        'role_id' => $role,
+                    ]);
+                }
+
+                $response = [
+                    'status'  => 200,
+                    'message' => 'Data created successfuly',
+                ];
+            }
         } else {
             $response = [
                 'status'  => 500,

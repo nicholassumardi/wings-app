@@ -113,52 +113,21 @@
             },
             success: function(response) {
                 if (response.status == 200) {
-                    // Handle success response
+                    M.toast({html:  response.message, classes: 'green'})
                 } else if (response.status == 422) {
                     $.each(response.error, function(i, val) {
                         $.each(val, function(i, val) {
-                            $('#validation_content').append(`
-                                <li>` + val + `</li>
-                            `);
+                            M.toast({html:  val, classes: 'blue'})
                         });
                     });
                 }
             },
             error: function(xhr, status, error) {
                 // Handle error
-                console.error(xhr.responseText); // Log the detailed error message
+                M.toast({html:  '500 error', classes: 'red'})
             }
         });
     }
-
-    function destroy(id) {
-        $.ajax({
-        url: '{{ url("admin/task_management/delete") }}',
-        type: 'delete',
-        dataType: 'JSON',
-        data: {
-            id: id
-        },
-         headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-         beforeSend: function() {
-            $('#validation_alert').hide();
-            $('#validation_content').html('');
-         },
-         success: function(response) {
-            if(response.status == 200) {
-               loadDatatble()
-               M.toast({html:  response.message, classes: 'green'})
-            } else {
-                M.toast({html:  response.message, classes: 'red'})
-            }
-         },
-         error: function() {
-            M.toast({html:  '500 Server Error', classes: 'red'})
-         }
-      });
-   }
 
    
 </script>

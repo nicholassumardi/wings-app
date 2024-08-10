@@ -118,7 +118,7 @@ class TaskManagementController extends Controller
                     'user_id'      => $request->user_id ? $request->user_id : NULL,
                     'title'        => $request->title,
                     'description'  => $request->description,
-                    'due_date'     => date('Y-m-d', strtotime($request->due_date)),
+                    'due_date'     => date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $request->due_date))),
                     'status'       => $request->status,
                 ]);
 
