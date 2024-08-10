@@ -42,6 +42,8 @@ Route::prefix('admin')->middleware('auth.login')->group(function () {
     Route::prefix('user_setting')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::get('datatable', [UserController::class, 'datatableUser']);
+        Route::get('detail', [UserController::class, 'detailUser']);
+        Route::get('show_update/{id}', [UserController::class, 'detailShow']);
         Route::post('create', [UserController::class, 'createUser']);
         Route::post('update', [UserController::class, 'updateUser']);
         Route::get('show', [UserController::class, 'getDataUser']);

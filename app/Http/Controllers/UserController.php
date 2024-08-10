@@ -35,6 +35,28 @@ class UserController extends Controller
         return view('admin.layouts.index', ['data' => $this->dataView]);
     }
 
+
+    public function detailUser()
+    {
+
+        $this->dataView['content'] = 'admin.settings.user_detail';
+        $this->dataView['data_role'] = Role::all();
+
+
+        return view('admin.layouts.index', ['data' => $this->dataView]);
+    }
+
+    public function detailShow($id)
+    {
+        $this->dataView['content'] = 'admin.settings.user_detail_update';
+        $this->dataView['data_user'] = UserRole::where('user_id', $id)->get();
+        $this->dataView['id'] = $id;
+        $this->dataView['data_role'] = Role::all();
+
+
+        return view('admin.layouts.index', ['data' => $this->dataView]);
+    }
+
     public function createUser(Request $request)
     {
         $validation = Validator::make(
@@ -100,14 +122,12 @@ class UserController extends Controller
                 [
                     'email'        => 'required|email|unique:users,email',
                     'name'         => 'required',
-                    'password'     => 'required',
                     'role_id'      => 'required|array',
                 ],
                 [
                     'email.required'    => 'email cannot empty.',
                     'email.unique'      => 'The email address has already been taken.',
                     'name.required'     => 'name cannot empty.',
-                    'password.required' => 'password cannot empty.',
                     'role_id.required'  => 'role cannot empty.',
                     'role_id.array'     => 'role must be array.',
                 ]
@@ -242,7 +262,7 @@ class UserController extends Controller
             foreach ($query_data as $val) {
                 $button = '<div class="row">
                             <div class="col s6">
-                                <p><a class="mb-6 btn btn-large waves-effect waves-light green darken-1" onclick="show(' . $val->id . ')"> <i
+                                <p><a class="mb-6 btn btn-large waves-effect waves-light green darken-1"  href="' . url('admin/user_setting/show_update/' . $val->id . '') . '"> <i
                                             class="material-icons edit">edit</i></a>
                             </div>
                             <div class="col s6">

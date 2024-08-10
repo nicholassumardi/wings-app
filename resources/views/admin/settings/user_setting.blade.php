@@ -19,7 +19,7 @@
                         </ol>
                     </div>
                     <div class="col s2 m2 l2">
-                        <a class="waves-effect waves-light btn modal-trigger" href="#modal_task">Add New Role</a>
+                        <a class="waves-effect waves-light btn modal-trigger" href="{{url('admin/user_setting/detail')}}">Add New User</a>
                     </div>
                 </div>
             </div>
@@ -38,7 +38,8 @@
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
-                                                        <th>User Type</th>
+                                                        <th>Name</th>
+                                                        <th>Email</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -113,49 +114,11 @@
          },
          columns: [
             { name: 'id', orderable: false, searchable: false, className: 'text-center align-middle details-control' },
-            { name: 'user_type', className: 'text-center align-middle' },
+            { name: 'name', className: 'text-center align-middle' },
+            { name: 'email', className: 'text-center align-middle' },
             { name: 'action', orderable: false, searchable: false, className: 'text-center align-middle'},
          ]
       }); 
-    }
-
-
-    function save() {
-        var formData = new FormData($('#form_data')[0]); // Corrected selector
-        $.ajax({
-            url: '{{ url("admin/user_setting/create") }}',
-            type: 'POST',
-            dataType: 'JSON',
-            data: formData,
-            processData: false, // Set processData to false when using FormData
-            contentType: false, // Set contentType to false when using FormData
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            beforeSend: function() {
-                // You can add any actions you want to perform before sending the request here
-            },
-            success: function(response) {
-                loadDatatble()
-                if (response.status == 200) {
-                    var elems = document.querySelectorAll('.modal');
-                    var instance = M.Modal.getInstance(elems);
-                    instance.close();
-                } else if (response.status == 422) {
-                    $.each(response.error, function(i, val) {
-                        $.each(val, function(i, val) {
-                            $('#validation_content').append(`
-                                <li>` + val + `</li>
-                            `);
-                        });
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error(xhr.responseText); // Log the detailed error message
-            }
-        });
     }
 
     function show(id) {

@@ -16,7 +16,7 @@
                     </div>
                     <div class="col s2 m2 l2">
                         <a class="waves-effect waves-light btn modal-trigger"
-                            href="{{url('admin/task_management')}}">Back</a>
+                            href="{{url('admin/user_setting')}}">Back</a>
                     </div>
                 </div>
             </div>
@@ -30,7 +30,6 @@
                                 <div class="row">
                                     <div class="col s10 offset-s1">
 
-
                                     </div>
                                 </div>
                             </div>
@@ -38,49 +37,36 @@
                                 @csrf
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input type="text" name="title" id="title" value="{{$data_task->title}}">
-                                        <label for="fn">Title</label>
+                                        <input type="text" name="name" id="name">
+                                        <label for="fn">Name</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <textarea id="description" class="materialize-textarea"
-                                            name="description">{{$data_task->description}}</textarea>
-                                        <label for="email">Description</label>
+                                        <input type="email" name="email" id="email">
+                                        <label for="email">Email</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <select name="user_id" id="user_id" class="select2 browser-default">
-                                            @if ($data_task->user_id != null)
-                                            <option value="{{$data_task->user_id}}">{{$data_task->user->name}}</option>
-                                            @endif
+                                        <select name="role_id[]" id="role_id" class="select2 browser-default" multiple>
+                                            @foreach ($data_role as $role)
+                                            <option value="{{$role->id}}">{{$role->user_type}}</option>
+                                            @endforeach
                                         </select>
-                                        <label for="user_id">Assign To</label>
+                                        <label for="role_id">Roles</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <select name="status" id="status">
-                                            <option {{$data_task->status == 0 ? 'selected' : ''}} value="0">
-                                                Incomplete</option>
-                                            <option {{$data_task->status == 1 ? 'selected' : ''}} value="1">
-                                                Complete</option>
-                                        </select>
-                                        <label for="status">Status</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input type="text" class="datepicker" name="due_date"
-                                            value="{{$data_task->due_date}}">
-                                        <label for="message">Due Date</label>
+                                        <input type="password" class="password" name="password">
+                                        <label for="message">Password</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <button class="btn cyan waves-effect waves-light right" type="button"
-                                            id="btn-save" onclick="update({{$data_task->id}})">Update
+                                            id="btn-save" onclick="save()">Add
                                             <i class="material-icons right">send</i>
                                         </button>
                                     </div>
@@ -97,14 +83,13 @@
 @push('js')
 <script>
     $(function() {
-        select2ServerSide('#user_id', '{{ url("admin/select2/user") }}');
+        select2ServerSide('#role_id', '{{ url("admin/select2/role") }}');
     });
-    
-    function update(id) {
+
+    function save() {
         var formData = new FormData($('#form_data')[0]); // Corrected selector
-        formData.append("id", id);
         $.ajax({
-            url: '{{ url("admin/task_management/update") }}',
+            url: '{{ url("admin/user_setting/create") }}',
             type: 'POST',
             dataType: 'JSON',
             data: formData,
