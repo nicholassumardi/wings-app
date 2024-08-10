@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TaskManagement;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class TaskManagementController extends Controller
@@ -36,7 +37,7 @@ class TaskManagementController extends Controller
     {
         $this->dataView['content'] = 'admin.task_management.detail_update';
         $this->dataView['data_task'] = TaskManagement::where('id', $id)->first();
-        
+
         return view('admin.layouts.index', ['data' => $this->dataView]);
     }
 
@@ -66,7 +67,7 @@ class TaskManagementController extends Controller
                 'user_id'      => $request->user_id ? $request->user_id : NULL,
                 'title'        => $request->title,
                 'description'  => $request->description,
-                'due_date'     => date('Y-m-d', strtotime($request->due_date)),
+                'due_date'     => date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $request->due_date))),
                 'status'       => $request->status,
             ]);
 

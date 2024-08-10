@@ -118,19 +118,17 @@
             },
             success: function(response) {
                 if (response.status == 200) {
-                    // Handle success response
+                    M.toast({html:  response.message, classes: 'green'})
                 } else if (response.status == 422) {
                     $.each(response.error, function(i, val) {
                         $.each(val, function(i, val) {
-                            $('#validation_content').append(`
-                                <li>` + val + `</li>
-                            `);
+                            M.toast({html:  val, classes: 'blue'})
                         });
                     });
                 }
             },
             error: function(xhr, status, error) {
-                // Handle error
+                M.toast({html:  response.message, classes: 'red'})
                 console.error(xhr.responseText); // Log the detailed error message
             }
         });

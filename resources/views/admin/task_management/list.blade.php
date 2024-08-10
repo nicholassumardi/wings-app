@@ -111,33 +111,18 @@
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
          beforeSend: function() {
-            $('#validation_alert').hide();
-            $('#validation_content').html('');
+        
          },
          success: function(response) {
             if(response.status == 200) {
                loadDatatble()
-               notif('success', 'bg-success', response.message);
-            } else if(response.status == 422) {
-               notif('warning', 'bg-warning', 'Validation');
-               
-               $.each(response.error, function(i, val) {
-                  $.each(val, function(i, val) {
-                     $('#validation_content').append(`
-                        <li>` + val + `</li>
-                     `);
-                  });
-               });
+               M.toast({html:  response.message, classes: 'green'})
             } else {
-               notif('error', 'bg-danger', response.message);
+                M.toast({html:  response.message, classes: 'red'})
             }
          },
          error: function() {
-            swalInit.fire({
-               title: 'Server Error',
-               text: 'Please contact developer',
-               type: 'error'
-            });
+            M.toast({html:  '500 server error', classes: 'red'})
          }
       });
    }

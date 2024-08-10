@@ -138,22 +138,20 @@
             success: function(response) {
                 loadDatatble()
                 if (response.status == 200) {
+                    M.toast({html:  response.message, classes: 'green'})
                     var elems = document.querySelectorAll('.modal');
                     var instance = M.Modal.getInstance(elems);
                     instance.close();
                 } else if (response.status == 422) {
                     $.each(response.error, function(i, val) {
                         $.each(val, function(i, val) {
-                            $('#validation_content').append(`
-                                <li>` + val + `</li>
-                            `);
+                            M.toast({html:  val, classes: 'blue'})
                         });
                     });
                 }
             },
             error: function(xhr, status, error) {
-                // Handle error
-                console.error(xhr.responseText); // Log the detailed error message
+                M.toast({html: '500 Error', classes: 'red'})
             }
         });
     }
@@ -220,22 +218,20 @@
             success: function(response) {
                 loadDatatble()
                 if (response.status == 200) {
+                    M.toast({html:  response.message, classes: 'green'})
                     var elems = document.querySelectorAll('.modal');
                     var instance = M.Modal.getInstance(elems);
                     instance.close();
                 } else if (response.status == 422) {
                     $.each(response.error, function(i, val) {
                         $.each(val, function(i, val) {
-                            $('#validation_content').append(`
-                                <li>` + val + `</li>
-                            `);
+                            M.toast({html:  val, classes: 'red'})
                         });
                     });
                 }
             },
             error: function(xhr, status, error) {
-                // Handle error
-                console.error(xhr.responseText); // Log the detailed error message
+                M.toast({html:  "500 error", classes: 'red'})
             }
         });
     }
@@ -258,27 +254,13 @@
          success: function(response) {
             if(response.status == 200) {
                loadDatatble()
-               notif('success', 'bg-success', response.message);
-            } else if(response.status == 422) {
-               notif('warning', 'bg-warning', 'Validation');
-               
-               $.each(response.error, function(i, val) {
-                  $.each(val, function(i, val) {
-                     $('#validation_content').append(`
-                        <li>` + val + `</li>
-                     `);
-                  });
-               });
+               M.toast({html:  response.message, classes: 'green'})
             } else {
-               notif('error', 'bg-danger', response.message);
+                M.toast({html:  response.message, classes: 'red'})
             }
          },
          error: function() {
-            swalInit.fire({
-               title: 'Server Error',
-               text: 'Please contact developer',
-               type: 'error'
-            });
+            M.toast({html:  response.message, classes: 'red'})
          }
       });
    }

@@ -3,7 +3,7 @@
 <!-- BEGIN: Head-->
 
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,6 +13,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ url('assets/images/favicon/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- BEGIN: VENDOR CSS-->
+    <script src="{{ url('assets/js/plugins/notifications/noty.min.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ url('assets/vendors/vendors.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url('assets/vendors/sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url('assets/vendors/animate-css/animate.css') }}">

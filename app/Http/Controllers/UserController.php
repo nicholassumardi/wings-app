@@ -117,48 +117,26 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if ($user) {
-            $validation = Validator::make(
-                $request->all(),
-                [
-                    'email'        => 'required|email|unique:users,email',
-                    'name'         => 'required',
-                    'role_id'      => 'required|array',
-                ],
-                [
-                    'email.required'    => 'email cannot empty.',
-                    'email.unique'      => 'The email address has already been taken.',
-                    'name.required'     => 'name cannot empty.',
-                    'role_id.required'  => 'role cannot empty.',
-                    'role_id.array'     => 'role must be array.',
-                ]
-            );
 
-            if ($validation->fails()) {
-                $response = [
-                    'status'   => 422,
-                    'message'  => $validation->errors(),
-                ];
-            } else {
-                $user->userRole()->delete();
+            $user->userRole()->delete();
 
-                $user->update([
-                    'email'    => $request->email,
-                    'name'     => $request->name,
-                    'password' => Hash::make($request->password),
+            $user->update([
+                'email'    => $request->email,
+                'name'     => $request->name,
+                'password' => Hash::make($request->password),
+            ]);
+
+            foreach ($request->role_id as $role) {
+                UserRole::create([
+                    'user_id' => $user->id,
+                    'role_id' => $role,
                 ]);
-
-                foreach ($request->role_id as $role) {
-                    UserRole::create([
-                        'user_id' => $user->id,
-                        'role_id' => $role,
-                    ]);
-                }
-
-                $response = [
-                    'status'  => 200,
-                    'message' => 'Data created successfuly',
-                ];
             }
+
+            $response = [
+                'status'  => 200,
+                'message' => 'Data created successfuly',
+            ];
         } else {
             $response = [
                 'status'  => 500,
@@ -172,7 +150,7 @@ class UserController extends Controller
     public function deleteUser(Request $request)
     {
         $user = User::find($request->id);
-        $userRoles = UserRole::where('role_id', $user->id)->get();
+        $userRoles = UserRole::where('user_id', $user->id)->get();
 
         if (count($userRoles) > 0) {
             $response = [

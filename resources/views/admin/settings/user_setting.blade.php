@@ -19,7 +19,8 @@
                         </ol>
                     </div>
                     <div class="col s2 m2 l2">
-                        <a class="waves-effect waves-light btn modal-trigger" href="{{url('admin/user_setting/detail')}}">Add New User</a>
+                        <a class="waves-effect waves-light btn modal-trigger"
+                            href="{{url('admin/user_setting/detail')}}">Add New User</a>
                     </div>
                 </div>
             </div>
@@ -221,27 +222,13 @@
          success: function(response) {
             if(response.status == 200) {
                loadDatatble()
-               notif('success', 'bg-success', response.message);
-            } else if(response.status == 422) {
-               notif('warning', 'bg-warning', 'Validation');
-               
-               $.each(response.error, function(i, val) {
-                  $.each(val, function(i, val) {
-                     $('#validation_content').append(`
-                        <li>` + val + `</li>
-                     `);
-                  });
-               });
+               M.toast({html:  response.message, classes: 'green'})
             } else {
-               notif('error', 'bg-danger', response.message);
+                M.toast({html:  response.message, classes: 'red'})
             }
          },
          error: function() {
-            swalInit.fire({
-               title: 'Server Error',
-               text: 'Please contact developer',
-               type: 'error'
-            });
+            M.toast({html: '500 Error', classes: 'red'})
          }
       });
    }
