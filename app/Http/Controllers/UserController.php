@@ -151,7 +151,7 @@ class UserController extends Controller
 
                 $response = [
                     'status'  => 200,
-                    'message' => 'Data created successfuly',
+                    'message' => 'Data updated successfuly',
                 ];
             }
         } else {
@@ -356,7 +356,7 @@ class UserController extends Controller
 
                 $response = [
                     'status'  => 200,
-                    'message' => 'Data created successfuly',
+                    'message' => 'Data updated successfuly',
                 ];
             }
         } else {
