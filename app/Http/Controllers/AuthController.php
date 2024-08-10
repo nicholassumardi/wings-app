@@ -49,7 +49,7 @@ class AuthController extends Controller
     {
         Auth::logout();
 
-        return redirect('admin/login')->with(['success' => 'You have successfully logout.']);
+        return redirect('/')->with(['success' => 'You have successfully logout.']);
     }
 
 

@@ -38,26 +38,32 @@
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <input type="text" name="name" id="name"
-                                            value="{{$data_user->first()->user->name}}">
+                                            value="{{$data_user ? $data_user->first()->user->name : ''}}">
                                         <label for="fn">Name</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <input type="email" name="email" id="email"
-                                            value="{{$data_user->first()->user->email}}">
+                                            value="{{$data_user ? $data_user->first()->user->email : ''}}">
                                         <label for="email">Email</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <select name="role_id[]" id="role_id" class="select2 browser-default" multiple>
+                                            @if ($data_user)
+                                                @foreach ($data_role as $role)
+                                                @foreach ($data_user as $du)
+                                                <option value="{{$role->id}}" {{$du->role_id == $role->id ?
+                                                    'selected' : ''}}>{{$role->user_type}}</option>
+                                                @endforeach
+                                                @endforeach
+                                            @else
                                             @foreach ($data_role as $role)
-                                            @foreach ($data_user as $du)
-                                            <option value="{{$role->id}}" {{$du->role_id == $role->id ?
-                                                'selected' : ''}}>{{$role->user_type}}</option>
+                                            <option value="{{$role->id}}" >{{$role->user_type}}</option>
                                             @endforeach
-                                            @endforeach
+                                            @endif
 
                                         </select>
                                         <label for="role_id">Roles</label>
@@ -66,14 +72,14 @@
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <input type="password" class="password" name="password"
-                                            value="{{$data_user->first()->user->password}}">
+                                            value="{{$data_user ? $data_user->first()->user->password : ''}}">
                                         <label for="message">Password</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <button class="btn cyan waves-effect waves-light right" type="button"
-                                            id="btn-save" onclick="update({{$data_user->first()->user->id}})">Update
+                                            id="btn-save" onclick="update({{$data_user ? $data_user->first()->user->id : ''}})">Update
                                             <i class="material-icons right">send</i>
                                         </button>
                                     </div>
