@@ -102,44 +102,39 @@
     });
 
     function save() {
+        var formData = new FormData($('#form_data')[0]); // Corrected selector
         $.ajax({
-         url: '{{ url("admin/task_management/create") }}',
-         type: 'POST',
-         dataType: 'JSON',
-         data: $('#form_data').serialize(),
-         headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-         beforeSend: function() {
-            $('#validation_alert').hide();
-            $('#validation_content').html('');
-         },
-         success: function(response) {
-            if(response.status == 200) {
-               notif('success', 'bg-success', response.message);
-            } else if(response.status == 422) {
-               notif('warning', 'bg-warning', 'Validation');
-               
-               $.each(response.error, function(i, val) {
-                  $.each(val, function(i, val) {
-                     $('#validation_content').append(`
-                        <li>` + val + `</li>
-                     `);
-                  });
-               });
-            } else {
-               notif('error', 'bg-danger', response.message);
+            url: '{{ url("admin/task_management/create") }}',
+            type: 'POST',
+            dataType: 'JSON',
+            data: formData,
+            processData: false, // Set processData to false when using FormData
+            contentType: false, // Set contentType to false when using FormData
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // You can add any actions you want to perform before sending the request here
+            },
+            success: function(response) {
+                if (response.status == 200) {
+                    // Handle success response
+                } else if (response.status == 422) {
+                    $.each(response.error, function(i, val) {
+                        $.each(val, function(i, val) {
+                            $('#validation_content').append(`
+                                <li>` + val + `</li>
+                            `);
+                        });
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText); // Log the detailed error message
             }
-         },
-         error: function() {
-            swalInit.fire({
-               title: 'Server Error',
-               text: 'Please contact developer',
-               type: 'error'
-            });
-         }
-      });
-   }
+        });
+    }
 
    
 </script>

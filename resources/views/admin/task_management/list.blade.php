@@ -15,7 +15,8 @@
                         </ol>
                     </div>
                     <div class="col s2 m2 l2">
-                        <a class="waves-effect waves-light btn modal-trigger" href="{{url('admin/task_management/detail')}}">Add New task</a>
+                        <a class="waves-effect waves-light btn modal-trigger"
+                            href="{{url('admin/task_management/detail')}}">Add New task</a>
                     </div>
                 </div>
             </div>
@@ -98,12 +99,14 @@
     }
 
 
-    function destroy() {
+    function destroy(id) {
         $.ajax({
-         url: '{{ url("admin/task_management/create") }}',
-         type: 'delete',
-         dataType: 'JSON',
-         data: $('#form_data').serialize(),
+        url: '{{ url("admin/task_management/delete") }}',
+        type: 'delete',
+        dataType: 'JSON',
+        data: {
+            id: id
+        },
          headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
@@ -113,6 +116,7 @@
          },
          success: function(response) {
             if(response.status == 200) {
+               loadDatatble()
                notif('success', 'bg-success', response.message);
             } else if(response.status == 422) {
                notif('warning', 'bg-warning', 'Validation');

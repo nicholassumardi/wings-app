@@ -44,7 +44,7 @@ Route::prefix('admin')->middleware('auth.login')->group(function () {
         Route::post('create', [UserController::class, 'createUser']);
         Route::post('update', [UserController::class, 'updateUser']);
         Route::get('show', [UserController::class, 'getDataUser']);
-        Route::delete('delete', [UserController::class, 'deleteUser']);
+        Route::delete('delete/{id}', [UserController::class, 'deleteUser']);
     });
 
     Route::prefix('role_setting')->group(function () {

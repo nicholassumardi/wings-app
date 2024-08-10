@@ -57,7 +57,7 @@ class TaskManagementController extends Controller
                 'user_id'      => $request->user_id ? $request->user_id : NULL,
                 'title'        => $request->title,
                 'description'  => $request->description,
-                'due_date'     => $request->due_date,
+                'due_date'     => date('Y-m-d', strtotime($request->due_date)),
                 'status'       => $request->status,
             ]);
 
@@ -106,7 +106,7 @@ class TaskManagementController extends Controller
                     'user_id'      => $request->user_id ? $request->user_id : NULL,
                     'title'        => $request->title,
                     'description'  => $request->description,
-                    'due_date'     => $request->due_date,
+                    'due_date'     => date('Y-m-d', strtotime($request->due_date)),
                     'status'       => $request->status,
                 ]);
 
@@ -161,10 +161,10 @@ class TaskManagementController extends Controller
 
         if ($task) {
             $data = [
-                'user_id'      => $request->user_id ? $request->user_id : NULL,
-                'title'        => $request->title,
-                'description'  => $request->description,
-                'due_date'     => $request->due_date,
+                'user_id'      => $task->user_id ? $task->user_id : NULL,
+                'title'        => $task->title,
+                'description'  => $task->description,
+                'due_date'     => $task->due_date,
             ];
 
             $response = [
@@ -239,7 +239,7 @@ class TaskManagementController extends Controller
                             </div>
                             <div class="col s6">
                                 </p>
-                                <p><a class="mb-6 btn btn-medium waves-effect waves-light red darken-1"> <i
+                                <p><a class="mb-6 btn btn-medium waves-effect waves-light red darken-1" onclick="destroy(' . $val->id . ')"> <i
                                             class="material-icons edit">cancel</i></a></p>
                             </div>
                         </div>';
